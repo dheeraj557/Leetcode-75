@@ -1,66 +1,83 @@
 # Greatest Common Divisor of Strings
 
-This solution uses a brute-force approach to find the largest string that can divide both given strings.
-
 ## Problem Idea
 
-We need to find the greatest common divisor string of two strings, `str1` and `str2`.
+We need to find the largest string that can be repeated to form both given strings.
 
-A valid answer must satisfy two conditions:
+A valid answer must satisfy these conditions:
 
-- Both strings must be made by repeating the same base string some number of times.
-- The length of that base string must divide the lengths of both strings.
+- Both strings must be made by repeating the same base string.
+- That base string must divide the lengths of both strings evenly.
 
 For example, if the answer is `"abc"`, then:
 
-- `str1` must be `"abcabc"` or `"abcabcabc"`
-- `str2` must be `"abcabcabcabc"` etc.
+- `"abcabc"` and `"abcabcabc"` are valid
+- but `"abca"` would not be valid
 
-## Brute-Force Approach
+## Approach 1: Brute Force
 
-The code tries every possible prefix of the smaller string as a candidate answer.
+This approach tries every possible prefix of the first string as a candidate answer.
 
-### Step 1: Try every possible length
+### How it works
 
-The loop starts from the smaller of the two string lengths and goes down to `1`:
+- Start from the smaller length and check each possible length from large to small.
+- Take the first `i` characters of `str1` as a candidate base string.
+- Check whether that candidate can form both strings by repeating it the correct number of times.
+- The first valid candidate found is the answer.
 
-- `base = str1.substr(0, i)` takes the first `i` characters as a possible common divisor.
-- Each candidate is checked using the helper function `isvalid`.
+### Why it works
 
-### Step 2: Check if the candidate is valid
+If a string is a common divisor, then it must be a prefix of both strings and must repeat evenly to make them.
 
-The `isvalid` function verifies whether the candidate string can form both inputs:
+### Complexity
 
-- It first checks whether both string lengths are divisible by the candidate length.
-- Then it checks whether `str1` and `str2` are exactly equal to repeated versions of the candidate.
+- Time complexity: `O(n * m)` in practice, because many candidate strings are tested
+- Space complexity: `O(n + m)` for the repeated strings built during checking
 
-This is done using the helper function `joinwords`, which repeats a string `k` times.
+## Approach 2: Optimized Solution
 
-### Step 3: Return the first valid candidate
+This solution is much faster and uses a clever observation.
 
-The loop checks candidates from largest to smallest, so the first valid one found is the greatest common divisor string.
+### Key idea
 
-If no valid candidate exists, the function returns an empty string.
+If a common repeating string exists, then:
 
-## How the Helpers Work
+- `str1 + str2` must be equal to `str2 + str1`
+- otherwise, no valid non-empty answer exists
 
-### `isvalid`
+If this condition passes, then the answer is simply the prefix of `str1` of length equal to the greatest common divisor of the two string lengths.
 
-This function checks whether a given `base` can generate both strings:
+### Why it works
 
-- `len1 % len3 == 0` and `len2 % len3 == 0` ensure the base length evenly divides both strings.
-- `joinwords(base, q1)` and `joinwords(base, q2)` rebuild the two strings from the base.
-- If both rebuilt strings match the originals, the candidate is valid.
+If both strings are made by repeating the same base string, then their lengths must share a common divisor, and the base string must be the repeating pattern.
 
-### `joinwords`
+### Code Summary
 
-This function repeats a string `k` times and returns the combined result.
+The implementation does three things:
 
-## Complexity
+1. Checks whether a common repeating pattern is possible.
+2. Finds the GCD of the two string lengths.
+3. Returns the prefix of the first string with that length.
 
-This is a brute-force solution, so it checks many candidates one by one.
+### Complexity
 
-- It is simple and easy to understand.
-- It is not the most efficient approach for very large strings.
+- Time complexity: `O(n + m)`
+- Space complexity: `O(n + m)`
 
-In short, the program tries every possible common divisor candidate, tests it, and returns the first one that works.
+## Example
+
+Suppose:
+
+- `str1 = "abcabc"`
+- `str2 = "abcabcabc"`
+
+The common pattern is `"abc"`.
+
+- Lengths are `6` and `9`
+- GCD of `6` and `9` is `3`
+- The answer is the first `3` characters of `str1`, which is `"abc"`
+
+## Summary
+
+- The brute-force approach is simple but slower.
+- The optimized approach is the standard efficient solution for this problem.
